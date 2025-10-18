@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: eggcracker-reader
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: MAX_CHARS
+        value: "2500"
+      - key: ALLOWLIST
+        value: "9to5google.com,9to5mac.com,abc.net.au,abcnews.go.com,al-monitor.com,aljazeera.com,allafrica.com,apnews.com,arabnews.com,arstechnica.com,asahi.com,associatedpress.com,axios.com,bangkokpost.com,bbc.co.uk,bbc.com,bbc.com/sport,cbc.ca,cbsnews.com,cbssports.com,channelnewsasia.com,chinadaily.com.cn,cnbc.com,dw.com,espn.com,euobserver.com,euronews.com,finance.yahoo.com,france24.com,globaltimes.cn,gulfnews.com,haaretz.com,hindustantimes.com,hollywoodreporter.com,ieee.org,independent.co.uk,indianexpress.com,investopedia.com,irishtimes.com,jakartapost.com,japantimes.co.jp,koreaherald.com,koreatimes.co.kr,kyodonews.net,lefigaro.fr,lemonde.fr/en,livescience.com,marketwatch.com,mg.co.za,nasa.gov,nation.africa,news.com.au,news24.com,npr.org,pbs.org,pitchfork.com,politico.eu,popsci.com,punchng.com,reuters.com,rfi.fr,rollingstone.com,rtbf.be,rte.ie,scitechdaily.com,scmp.com,si.com,skysports.com,space.com,spectrum.ieee.org,straitstimes.com,stuff.co.nz,techcrunch.com,techxplore.com,theathletic.com,theconversation.com,thediplomat.com,theguardian.com,theguardian.com/au,theguardian.ng,thehindu.com,thejournal.ie,thenextweb.com,thetelegraph.com.au,thetimes.co.uk/news,theverge.com,timesofindia.indiatimes.com,timesofisrael.com,usatoday.com,variety.com,vietnamnews.vn,vox.com,vox.com/culture,vulture.com,wired.com,xda-developers.com"
+      - key: TIMEOUT
+        value: "15.0"
