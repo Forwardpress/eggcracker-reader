@@ -83,21 +83,25 @@ async def read(url: str = Query(..., description="Article URL to preview")):
         raise HTTPException(status_code=400, detail="URL must start with http:// or https://")
     if not is_allowed(url):
         raise HTTPException(status_code=403, detail="Domain not allowed")
+    
     try:
         COMMON_HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/124.0 Safari/537.36"
-    ),
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": "en-US,en;q=0.9",
-}
-async with httpx.AsyncClient(follow_redirects=True, timeout=TIMEOUT, headers=COMMON_HEADERS) as client:
-    r = await client.get(url)
+            "User-Agent": (
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/124.0 Safari/537.36"
+            ),
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9",
+        }
 
+        async with httpx.AsyncClient(
+            follow_redirects=True, timeout=TIMEOUT, headers=COMMON_HEADERS
+        ) as client:
+            r = await client.get(url)
             r.raise_for_status()
             html_src = r.text
+
     except Exception:
         raise HTTPException(status_code=502, detail="Failed to fetch source URL")
 
