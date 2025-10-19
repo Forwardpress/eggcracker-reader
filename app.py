@@ -87,20 +87,31 @@ async def read(url: str = Query(..., description="Article URL to preview")):
         raise HTTPException(status_code=403, detail="Domain not allowed")
     
         # --- Fetch the source page with browser-like headers (no br) and HTTP/1.1 ---
-    try:
+    
+        try:
         COMMON_HEADERS = {
+            # Core UA & language
             "User-Agent": (
                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                 "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/124.0 Safari/537.36"
+                "Chrome/124.0.0.0 Safari/537.36"
             ),
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Language": "en-US,en;q=0.9",
-            # Avoid 'br' to prevent brotli decoding issues
+            # Avoid brotli to sidestep decoding issues
             "Accept-Encoding": "gzip, deflate",
+            # Realistic browser fetch metadata
             "Connection": "keep-alive",
             "Upgrade-Insecure-Requests": "1",
-            # Some sites like a referer present
+            "Sec-Fetch-Site": "none",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-User": "?1",
+            "Sec-Fetch-Dest": "document",
+            # Client hints that some CDNs check
+            "sec-ch-ua": '"Chromium";v="124", "Not=A?Brand";v="99"',
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": '"macOS"',
+            # A generic referer helps some news CDNs
             "Referer": "https://www.google.com/",
         }
 
@@ -110,7 +121,7 @@ async def read(url: str = Query(..., description="Article URL to preview")):
             follow_redirects=True,
             timeout=TIMEOUT,
             headers=COMMON_HEADERS,
-            http2=False,                     # stick to HTTP/1.1 for compatibility
+            http2=False,           # stick to HTTP/1.1 for CDN compatibility
             limits=limits,
         ) as client:
             r = await client.get(url)
@@ -118,7 +129,6 @@ async def read(url: str = Query(..., description="Article URL to preview")):
             html_src = r.text
 
     except Exception as e:
-        # Surface the specific cause so we can see it in the browser/logs
         msg = f"Failed to fetch source URL ({e.__class__.__name__}: {str(e)[:200]})"
         raise HTTPException(status_code=502, detail=msg)
 
