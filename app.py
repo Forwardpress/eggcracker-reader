@@ -86,6 +86,7 @@ async def read(url: str = Query(..., description="Article URL to preview")):
     if not is_allowed(url):
         raise HTTPException(status_code=403, detail="Domain not allowed")
     
+        # --- Fetch the source page with browser-like headers (no br) and HTTP/1.1 ---
     try:
         COMMON_HEADERS = {
             "User-Agent": (
@@ -95,17 +96,31 @@ async def read(url: str = Query(..., description="Article URL to preview")):
             ),
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Language": "en-US,en;q=0.9",
+            # Avoid 'br' to prevent brotli decoding issues
+            "Accept-Encoding": "gzip, deflate",
+            "Connection": "keep-alive",
+            "Upgrade-Insecure-Requests": "1",
+            # Some sites like a referer present
+            "Referer": "https://www.google.com/",
         }
 
+        limits = httpx.Limits(max_keepalive_connections=5, max_connections=10)
+
         async with httpx.AsyncClient(
-            follow_redirects=True, timeout=TIMEOUT, headers=COMMON_HEADERS
+            follow_redirects=True,
+            timeout=TIMEOUT,
+            headers=COMMON_HEADERS,
+            http2=False,                     # stick to HTTP/1.1 for compatibility
+            limits=limits,
         ) as client:
             r = await client.get(url)
             r.raise_for_status()
             html_src = r.text
 
-    except Exception:
-        raise HTTPException(status_code=502, detail="Failed to fetch source URL")
+    except Exception as e:
+        # Surface the specific cause so we can see it in the browser/logs
+        msg = f"Failed to fetch source URL ({e.__class__.__name__}: {str(e)[:200]})"
+        raise HTTPException(status_code=502, detail=msg)
 
     try:
         doc = Document(html_src)
