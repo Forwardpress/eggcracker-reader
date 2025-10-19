@@ -83,7 +83,6 @@ async def read(url: str = Query(..., description="Article URL to preview")):
         raise HTTPException(status_code=400, detail="URL must start with http:// or https://")
     if not is_allowed(url):
         raise HTTPException(status_code=403, detail="Domain not allowed")
-
     try:
         COMMON_HEADERS = {
     "User-Agent": (
