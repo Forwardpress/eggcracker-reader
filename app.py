@@ -86,9 +86,7 @@ async def read(url: str = Query(..., description="Article URL to preview")):
     if not is_allowed(url):
         raise HTTPException(status_code=403, detail="Domain not allowed")
     
-        # --- Fetch the source page with browser-like headers (no br) and HTTP/1.1 ---
-    
-        try:
+    try:
         COMMON_HEADERS = {
             # Core UA & language
             "User-Agent": (
