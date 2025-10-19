@@ -49,15 +49,17 @@ def excerpt(text: str, limit: int) -> str:
 
 TEMPLATE = """<!doctype html>
 <html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
 <style>
-body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;line-height:1.6;max-width:880px;margin:2rem auto;padding:1rem;color:#111;background:#fff}
-h1{font-size:1.5rem;margin:.25rem 0 .75rem}
-.meta{color:#666;font-size:.95rem;margin-bottom:1rem}
-a{color:#0a58ca;text-decoration:none}a:hover{text-decoration:underline}
-hr{border:0;border-top:1px solid #ddd;margin:1rem 0}
-img,video,picture,iframe,canvas,svg,figure{display:none!important}
+body{{font-family:system-ui,-apple-system,'Segoe UI',Roboto,Inter,Arial,sans-serif;line-height:1.6;max-width:880px;margin:2rem auto;padding:1rem;color:#111;background:#fff}}
+h1{{font-size:1.5rem;margin:.25rem 0 .75rem}}
+.meta{{color:#666;font-size:.95rem;margin-bottom:1rem}}
+a{{color:#0a58ca;text-decoration:none}}
+a:hover{{text-decoration:underline}}
+hr{{border:0;border-top:1px solid #ddd;margin:1rem 0}}
+img,video,picture,iframe,canvas,svg,figure{{display:none!important}}
 </style>
 </head><body>
 <header>
